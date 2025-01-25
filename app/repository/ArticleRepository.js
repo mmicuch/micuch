@@ -153,7 +153,7 @@ async function find(articleId) {
  */
 async function findComments(articleId) {
     return await Db.query(
-        'SELECT * FROM comments WHERE article_id = :articleId ORDER BY created_at DESC',
+        'SELECT * FROM comments WHERE article_id = :articleId ORDER BY created_at ASC',
         { articleId: articleId }
     );
 }

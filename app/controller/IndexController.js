@@ -27,7 +27,8 @@ router.get("/article/:articleId", async (req, res) => {
     res.render('index/article_detail.html.njk', {
         article: article,
         comments: comments,
-        user: req.session.user
+        user: req.session.user,
+        getFlashMessages: req.flash.bind(req)
     });
 });
 
@@ -46,7 +47,8 @@ router.post("/article/:articleId/comment", async (req, res) => {
     );
 
     if (existingUser.length > 0 && (!req.session.user || req.session.user.username !== username)) {
-        return res.status(400).send('Username already taken');
+        req.flash('error', 'Username already taken');
+        return res.redirect(`/article/${articleId}`);
     }
 
     await Db.query(

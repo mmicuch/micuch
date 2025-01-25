@@ -5,7 +5,7 @@ import {fileURLToPath} from 'url';
 import {initNunjucksEnv} from './service/TemplateEngine.js';
 import sessions from "express-session";
 import SessionFileStore from "session-file-store";
-import flash from 'express-flash-message';
+import flash from 'connect-flash'; // Zmeníme import na 'connect-flash'
 import {IndexController} from './controller/IndexController.js';
 import {UserController} from './controller/UserController.js';
 import {ArticleController} from './controller/ArticleController.js';
@@ -33,12 +33,11 @@ app.use(sessions({
     resave: true
 }));
 
-app.use(flash({
-    sessionKeyName: 'express-flash-message',
-}));
+app.use(flash()); // Použijeme 'connect-flash' middleware
 
 app.use(function(req, res, next) {
     res.locals.user = req.session.user;
+    res.locals.getFlashMessages = (type) => req.flash(type); // Nastavíme flash správy do lokálnych premenných
     next();
 });
 

@@ -42,6 +42,11 @@
 
             <div class="border border-light rounded p-3 m-3">
                 <h3>Pridať komentár</h3>
+                {% for message in getFlashMessages('error') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
                 <form method="post" action="/article/{{ article.id }}/comment">
                     <div class="mb-3">
                         <label for="username" class="form-label">Meno</label>

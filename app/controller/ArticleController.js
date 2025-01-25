@@ -68,13 +68,13 @@ router.post("/edit/:articleId", upload.single('image'), async (req, res) => {
     // Ak je adresa null, pridáme novú lokalitu do tabuľky locations
     if (article.city && article.district && article.region) {
         let existingLocation = await Db.query(
-            'SELECT id FROM locations WHERE location = :city AND district = :district AND region = :region AND address IS NULL',
+            'SELECT id FROM locations WHERE location = :city AND district = :district AND region = :region',
             { city: article.city, district: article.district, region: article.region }
         );
 
         if (existingLocation.length === 0) {
             let result = await Db.query(
-                'INSERT INTO locations (location, district, region, address) VALUES (:city, :district, :region, NULL)',
+                'INSERT INTO locations (location, district, region) VALUES (:city, :district, :region)',
                 { city: article.city, district: article.district, region: article.region }
             );
             article.location_id = result.insertId;
@@ -85,6 +85,14 @@ router.post("/edit/:articleId", upload.single('image'), async (req, res) => {
 
     if (article.location_id === null) {
         return res.status(400).send('Location ID cannot be null');
+    }
+
+    // Uložíme adresu do tabuľky addresses
+    if (article.address) {
+        await Db.query(
+            'INSERT INTO addresses (location_id, address) VALUES (:location_id, :address)',
+            { location_id: article.location_id, address: article.address }
+        );
     }
 
     let articleId = await ArticleService.saveArticle(article);
@@ -134,7 +142,7 @@ router.get("/edit/:articleId", async (req, res) => {
     // Extrahujeme unikátne regióny, okresy a mestá
     let regions = [...new Set(locations.map(l => l.region))];
     let districts = [...new Set(locations.map(l => l.district))];
-    let cities = [...new Set(locations.filter(l => l.address === null).map(l => l.location))];
+    let cities = [...new Set(locations.map(l => l.location))];
 
     res.render('article/edit.html.njk', {
         article: article,
