@@ -1,0 +1,117 @@
+{% extends 'layout.html.njk' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2">
+            {% if article.id == 0 %}
+                <h1>Nový článok</h1>
+            {% else %}
+                <h1>Upraviť článok</h1>
+            {% endif %}
+            <form method="post" action="/article/edit/{{ article.id }}" enctype="multipart/form-data">
+                <input type="hidden" id="location_id" name="location_id" value="{{ article.location_id }}">
+                <div class="mb-3">
+                    <label for="title" class="form-label">Názov</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ article.title }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="content" class="form-label">Obsah</label>
+                    <textarea class="form-control" id="content" name="content" rows="5" required>{{ article.content }}</textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="eventType" class="form-label">Typ podujatia</label>
+                    <select class="form-select" id="eventType" name="eventType" required>
+                        <option value="">Vyberte typ podujatia</option>
+                        <option value="Koncert" {% if article.eventType == 'Koncert' %}selected{% endif %}>Koncert</option>
+                        <option value="Divadlo" {% if article.eventType == 'Divadlo' %}selected{% endif %}>Divadlo</option>
+                        <option value="Výstava" {% if article.eventType == 'Výstava' %}selected{% endif %}>Výstava</option>
+                        <option value="Festival" {% if article.eventType == 'Festival' %}selected{% endif %}>Festival</option>
+                        <option value="Iné" {% if article.eventType == 'Iné' %}selected{% endif %}>Iné</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="eventDate" class="form-label">Dátum konania</label>
+                    <input type="date" class="form-control" id="eventDate" name="eventDate" value="{{ article.eventDate }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="region" class="form-label">Kraj</label>
+                    <select class="form-select" id="region" name="region" required>
+                        <option value="">Vyberte kraj</option>
+                        {% for region in regions %}
+                            <option value="{{ region }}" {% if article.region == region %}selected{% endif %}>{{ region }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="district" class="form-label">Okres</label>
+                    <select class="form-select" id="district" name="district" required>
+                        <option value="">Vyberte okres</option>
+                        {% for district in districts %}
+                            <option value="{{ district }}" {% if article.district == district %}selected{% endif %}>{{ district }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="city" class="form-label">Mesto</label>
+                    <select class="form-select" id="city" name="city" required>
+                        <option value="">Vyberte mesto</option>
+                        {% for city in cities %}
+                            <option value="{{ city }}" {% if article.city == city %}selected{% endif %}>{{ city }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Adresa</label>
+                    <input type="text" class="form-control" id="address" name="address" value="{{ article.address }}">
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Obrázok</label>
+                    <input type="file" class="form-control" id="image" name="image">
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="isPrivate" name="isPrivate" {% if article.isPrivate %}checked{% endif %}>
+                    <label class="form-check-label" for="isPrivate">Súkromný</label>
+                </div>
+                <button type="submit" class="btn btn-primary">Uložiť</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('region').addEventListener('change', async function() {
+            const region = this.value;
+            const response = await fetch(`/api/districts?region=${region}`);
+            const districts = await response.json();
+            const districtSelect = document.getElementById('district');
+            districtSelect.innerHTML = '<option value="">Vyberte okres</option>';
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+        });
+
+        document.getElementById('district').addEventListener('change', async function() {
+            const district = this.value;
+            const response = await fetch(`/api/cities?district=${district}`);
+            const cities = await response.json();
+            const citySelect = document.getElementById('city');
+            citySelect.innerHTML = '<option value="">Vyberte mesto</option>';
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block title %}
+    {% if article.id == 0 %}
+        Nový článok
+    {% else %}
+        Upraviť článok
+    {% endif %}
+{% endblock %}

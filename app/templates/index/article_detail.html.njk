@@ -1,0 +1,65 @@
+{% extends 'layout.html.njk' %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-12 col-md-8 offset-md-2">
+            <div class="border border-light rounded p-3 m-3">
+                <h2 class="text-center">{{ article.title }}</h2>
+                <div class="mb-2">
+                    {{ article.content | safe }}
+                </div>
+                <div class="mb-2">
+                    <strong>Typ podujatia:</strong> {{ article.event_type }}
+                </div>
+                <div class="mb-2">
+                    <strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}
+                </div>
+                <div class="mb-2">
+                    <strong>Miesto konania:</strong> {{ article.location }}
+                </div>
+                <div class="mb-2">
+                    <strong>Región:</strong> {{ article.region }}
+                </div>
+                <div class="text-end">
+                    <small>Posledná aktualizácia: {{ article.lastUpdate | formatDate('dd. MM. yyyy') }}</small>
+                </div>
+            </div>
+
+            <div class="border border-light rounded p-3 m-3">
+                <h3>Komentáre</h3>
+                {% for comment in comments %}
+                    <div class="border border-light rounded p-2 m-2">
+                        <strong>{{ comment.username }}</strong> <small>{{ comment.created_at | formatDate('dd. MM. yyyy H:mm:ss') }}</small>
+                        <p>{{ comment.comment }}</p>
+                        {% if user and user.roles.includes('admin') %}
+                            <form method="post" action="/article/{{ article.id }}/comment/{{ comment.id }}/delete" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm">Zmazať</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="border border-light rounded p-3 m-3">
+                <h3>Pridať komentár</h3>
+                <form method="post" action="/article/{{ article.id }}/comment">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Meno</label>
+                        {% if user %}
+                            <input type="text" class="form-control" id="username" name="username" value="{{ user.username }}" readonly>
+                        {% else %}
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Komentár</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Odoslať</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}Detail podujatia{% endblock %}
