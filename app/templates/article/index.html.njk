@@ -13,34 +13,38 @@
         </select>
     </div>
     {% for article in articles %}
-        <div class="card card-info mt-2">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <span>{{ article.title }}</span>
-                {% if user | is_granted('admin') %}
-                    <div class="btn-group btn-group-sm" role="group">
-                        <a type="button" class="btn btn-info float-right" href="/article/edit/{{ article.id }}">
-                            <span class="material-symbols-outlined">edit</span>
-                        </a>
-                        <a type="button" class="btn btn-danger" href="">
-                            <span class="material-symbols-outlined">delete</span>
-                        </a>
-                    </div>
-                {% endif %}
+        {% if not article.isPrivate or (user and user.roles.includes('admin')) %}
+            <div class="card card-info mt-2">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>{{ article.title }}</span>
+                    {% if user | is_granted('admin') %}
+                        <div class="d-flex align-items-center gap-1">
+                            <a class="btn btn-info btn-sm d-flex align-items-center justify-content-center" href="/article/edit/{{ article.id }}">
+                                <span class="material-symbols-outlined">edit</span>
+                            </a>
+                            <form method="post" action="/article/delete/{{ article.id }}" class="m-0 p-0">
+                                <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center">
+                                    <span class="material-symbols-outlined">delete</span>
+                                </button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    {% if article.id | img_exists %}
+                        <img class="img-thumbnail" style="float: left; margin: 0 10px 10px 0" src="/uploads/{{ article.id }}.jpg">
+                    {% endif %}
+                    {{ article.content | safe }}<br><br>
+                    <strong>Typ podujatia:</strong> {{ article.event_type }}<br>
+                    <strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}<br>
+                    <strong>Miesto konania:</strong> {{ article.address }}, {{ article.location }}<br>
+                    <strong>Región:</strong> {{ article.region }}<br>
+                </div>
+                <div class="card-footer text-end">
+                    {{ article.lastUpdate | formatDate('dd. MM. yyyy H:mm:ss') }}
+                </div>
             </div>
-            <div class="card-body">
-                {% if article.id | img_exists %}
-                    <img class="img-thumbnail" style="float: left; margin: 0 10px 10px 0" src="/uploads/{{ article.id }}.jpg">
-                {% endif %}
-                {{ article.content | safe }}<br><br>
-                <strong>Typ podujatia:</strong> {{ article.event_type }}<br>
-                <strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}<br>
-                <strong>Miesto konania:</strong> {{ article.location }}<br>
-                <strong>Región:</strong> {{ article.region }}<br>
-            </div>
-            <div class="card-footer text-end">
-                {{ article.lastUpdate | formatDate('dd. MM. yyyy H:mm:ss') }}
-            </div>
-        </div>
+        {% endif %}
     {% endfor %}
 {% endblock %}
 

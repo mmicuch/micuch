@@ -8,11 +8,12 @@ const router = express.Router();
  */
 router.get("/", async (req, res) => {
     const sortBy = req.query.sortBy || 'event_date';
-    let articles = await ArticleRepository.findAll(null, sortBy); // Pass null to filter only public articles
+    let articles = await ArticleRepository.findAll(req.session.user, sortBy); // Pass user session to include private articles for admin
 
     res.render('index/index.html.njk', {
         articles: articles,
-        sortBy: sortBy
+        sortBy: sortBy,
+        user: req.session.user // Pass user session to the template
     });
 });
 

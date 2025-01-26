@@ -15,7 +15,7 @@
                     <strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}
                 </div>
                 <div class="mb-2">
-                    <strong>Miesto konania:</strong> {{ article.location }}
+                    <strong>Miesto konania:</strong> {{ article.address }}, {{ article.location }}
                 </div>
                 <div class="mb-2">
                     <strong>Región:</strong> {{ article.region }}
@@ -26,7 +26,7 @@
             </div>
 
             <div class="border border-light rounded p-3 m-3">
-                <h3>Komentáre</h3>
+                <h3 class="text-center">Komentáre</h3>
                 {% for comment in comments %}
                     <div class="border border-light rounded p-2 m-2">
                         <strong>{{ comment.username }}</strong> <small>{{ comment.created_at | formatDate('dd. MM. yyyy H:mm:ss') }}</small>
@@ -41,7 +41,7 @@
             </div>
 
             <div class="border border-light rounded p-3 m-3">
-                <h3>Pridať komentár</h3>
+                <h3 class="text-center">Pridať komentár</h3>
                 {% for message in getFlashMessages('error') %}
                     <div class="alert alert-danger">
                         {{ message }}

@@ -153,4 +153,13 @@ router.get("/edit/:articleId", async (req, res) => {
     });
 });
 
+/**
+ * Zmazať článok
+ */
+router.post("/delete/:articleId", async (req, res) => {
+    let articleId = parseInt(req.params.articleId, 10);
+    await ArticleRepository.deleteArticle(articleId);
+    res.redirect('/article');
+});
+
 export { router as ArticleController }

@@ -13,27 +13,29 @@
                 </select>
             </div>
             {% for article in articles %}
-                {% if not article.isPrivate %}
+                {% if article.isPrivate %}
+                    {% if user and user.roles.includes('admin') %}
+                        <!-- Zobraz privátny článok pre admina -->
+                        <div class="border border-light rounded p-3 m-3">
+                            <h2 class="text-center"><a href="/article/{{ article.id }}">{{ article.title }}</a></h2>
+                            <div class="mb-2">{{ article.content | safe }}</div>
+                            <div class="mb-2"><strong>Typ podujatia:</strong> {{ article.event_type }}</div>
+                            <div class="mb-2"><strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}</div>
+                            <div class="mb-2"><strong>Miesto konania:</strong> {{ article.address }}, {{ article.location }}</div>
+                            <div class="mb-2"><strong>Región:</strong> {{ article.region }}</div>
+                            <div class="text-end"><small>Posledná aktualizácia: {{ article.lastUpdate | formatDate('dd. MM. yyyy') }}</small></div>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <!-- Zobraz verejný článok pre všetkých -->
                     <div class="border border-light rounded p-3 m-3">
                         <h2 class="text-center"><a href="/article/{{ article.id }}">{{ article.title }}</a></h2>
-                        <div class="mb-2">
-                            {{ article.content | safe }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Typ podujatia:</strong> {{ article.event_type }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Miesto konania:</strong> {{ article.location }}
-                        </div>
-                        <div class="mb-2">
-                            <strong>Región:</strong> {{ article.region }}
-                        </div>
-                        <div class="text-end">
-                            <small>Posledná aktualizácia: {{ article.lastUpdate | formatDate('dd. MM. yyyy') }}</small>
-                        </div>
+                        <div class="mb-2">{{ article.content | safe }}</div>
+                        <div class="mb-2"><strong>Typ podujatia:</strong> {{ article.event_type }}</div>
+                        <div class="mb-2"><strong>Dátum konania:</strong> {{ article.event_date | formatDate('dd. MM. yyyy') }}</div>
+                        <div class="mb-2"><strong>Miesto konania:</strong> {{ article.address }}, {{ article.location }}</div>
+                        <div class="mb-2"><strong>Región:</strong> {{ article.region }}</div>
+                        <div class="text-end"><small>Posledná aktualizácia: {{ article.lastUpdate | formatDate('dd. MM. yyyy') }}</small></div>
                     </div>
                 {% endif %}
             {% endfor %}
